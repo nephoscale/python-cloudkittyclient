@@ -298,7 +298,8 @@ def process_dict_and_display(invoice):
                                                     'dict_volume': 'Volume Charges',
                                                     'dict_compute': 'Compute Charges for Instance',
                                                     'dict_floating': 'Floating IP Charges',
-                                                    'dict_outbound': 'Outbound Charges for Instance'
+                                                    'dict_outbound': 'Outbound Charges for Instance',
+                                                    'dict_cloud_storage': 'cloud storage charges(Swift)',
                                                     }
 
                         # If value is Dict (Itemized invoice)
