@@ -16,9 +16,6 @@
 from __future__ import print_function
 from cloudkittyclient.common import utils
 
-from bson import json_util
-import json
-
 def do_report_tenant_list(cc, args):
     """List tenant report."""
     tenants = cc.reports.list_tenants()
