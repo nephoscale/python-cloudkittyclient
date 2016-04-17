@@ -12,7 +12,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
 from __future__ import print_function
 
 import datetime
@@ -30,9 +29,9 @@ from cloudkittyclient import exc
 from cloudkittyclient.i18n import _
 from cloudkittyclient.openstack.common import cliutils
 from prettytable import PrettyTable
-from bson import json_util
 import json
 import simplejson as json
+import prettytable
 
 def import_versioned_module(version, submodule=None):
     module = 'cloudkittyclient.v%s' % version
@@ -237,9 +236,11 @@ def process_updated_values(data):
 # Tabulated display using Pretty table
 def process_dict_and_display(invoice):
 
+
+    print(invoice)
     # Full invoice details
     # Converting an Invoice Unicode to Dict
-    invoice_details_full = json.loads(invoice, object_hook=json_util.object_hook, use_decimal=True) # invoice full
+    invoice_details_full = json.loads(invoice, use_decimal=True) # invoice full
 
     # class for formatting
     class color:
@@ -264,6 +265,7 @@ def process_dict_and_display(invoice):
                 # Necessary variables with necesary values
                 # Assigned necessary values for reusing the same
                 invoice_date = tenant_data['invoice_date']
+                invoice_date = datetime.datetime.fromtimestamp(float(invoice_date))
                 balance_cost = tenant_data['balance_cost']
                 tenant_name = tenant_data['tenant_name']
                 paid_cost = tenant_data['paid_cost']
@@ -271,10 +273,12 @@ def process_dict_and_display(invoice):
                 invoice_id = tenant_data['invoice_id']
                 tenant_id = tenant_data['tenant_id']
                 invoice_period_from = tenant_data['invoice_period_from']
+                invoice_period_from = datetime.datetime.fromtimestamp(float(invoice_period_from))
                 invoice_period_to = tenant_data['invoice_period_to']
+                invoice_period_to = datetime.datetime.fromtimestamp(float(invoice_period_to))
                 payment_status = tenant_data['payment_status']
                 id = tenant_data['id']
-                invoice_data = json.loads(tenant_data['invoice_data'], object_hook=json_util.object_hook)
+                invoice_data = json.loads(tenant_data['invoice_data'])
 
                 print("Invoice details for invoice %s" % invoice_id)
                 # add row with necessary values
@@ -340,7 +344,7 @@ def process_dict_and_display_invoice_list(invoice):
 
     # Full invoice details
     # Converting an Invoice Unicode to Dict
-    invoice_details_full = json.loads(invoice, object_hook=json_util.object_hook, use_decimal=True) # invoice full
+    invoice_details_full = json.loads(invoice, use_decimal=True) # invoice full
 
     # class for formatting
     class color:
@@ -365,6 +369,7 @@ def process_dict_and_display_invoice_list(invoice):
                 # Necessary variables with necesary values
                 # Assigned necessary values for reusing the same
                 invoice_date = tenant_data['invoice_date']
+                invoice_date = datetime.datetime.fromtimestamp(float(invoice_date))
                 balance_cost = tenant_data['balance_cost']
                 tenant_name = tenant_data['tenant_name']
                 paid_cost = tenant_data['paid_cost']
@@ -372,10 +377,12 @@ def process_dict_and_display_invoice_list(invoice):
                 invoice_id = tenant_data['invoice_id']
                 tenant_id = tenant_data['tenant_id']
                 invoice_period_from = tenant_data['invoice_period_from']
+                invoice_period_from = datetime.datetime.fromtimestamp(float(invoice_period_from))
                 invoice_period_to = tenant_data['invoice_period_to']
+                invoice_period_to = datetime.datetime.fromtimestamp(float(invoice_period_to))
                 payment_status = tenant_data['payment_status']
                 id = tenant_data['id']
-                invoice_data = json.loads(tenant_data['invoice_data'], object_hook=json_util.object_hook)
+                invoice_data = json.loads(tenant_data['invoice_data'])
 
                 print("Invoice details for invoice %s" % invoice_id)
                 # add row with necessary values
