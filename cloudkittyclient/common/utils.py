@@ -227,166 +227,120 @@ def exit(msg=''):
 def process_updated_values(data):
 
    print("Invoice updated succesfully, Details were as follows:")
-   invoice_updated = json.loads(data, object_hook=json_util.object_hook)
+   invoice_updated = data
    for data in invoice_updated:
-        print(data + ":" + invoice_updated[data])
+        print(data + " \tis updated")
 
 
 # Process invoice dict and display
 # Tabulated display using Pretty table
 def process_dict_and_display(invoice):
 
+    # class for formatting
+    class color:
+        BOLD = '\033[1m'
+        END = '\033[0m'
 
     print(invoice)
-    # Full invoice details
-    # Converting an Invoice Unicode to Dict
-    invoice_details_full = json.loads(invoice, use_decimal=True) # invoice full
+    for tenant_data in invoice:
 
-    # class for formatting
-    class color:
-        BOLD = '\033[1m'
-        END = '\033[0m'
+        # initialize table and table field names
+        x = PrettyTable()
+        x.field_names = ["id", "date", "from", "to", "total", "paid", "bal", "tenant(T)", "T ID","status" ]
 
-    # tenant based processing in invoicedata
-    for tenant in invoice_details_full:
+        invoice_date = tenant_data.invoice_date
+        balance_cost = tenant_data.balance_cost
+        tenant_name = tenant_data.tenant_name
+        paid_cost = tenant_data.paid_cost
+        total_cost = tenant_data.total_cost
+        invoice_id = tenant_data.invoice_id
+        tenant_id = tenant_data.tenant_id
+        invoice_period_from = tenant_data.invoice_period_from
+        invoice_period_to = tenant_data.invoice_period_to
+        payment_status = tenant_data.payment_status
+        id = tenant_data.id
+        invoice_data = tenant_data.invoice_data
 
-        print(color.BOLD)
-        # For printing details on tenant basis
-        print("Following were the invoice available for the tenant %s" % tenant)
+        x.add_row([invoice_id, invoice_date, invoice_period_from, invoice_period_to, total_cost, paid_cost, balance_cost, tenant_name, tenant_id, payment_status])
+        print(x)
+
+        # invoke next table y
+        y = PrettyTable()
+
+        # itemized Invoice details of the particular tenant
+        for invoice_data_entity,value in invoice_data.iteritems():
+
+                # Invoice_data_entity details
+                # For make user to understand the case well
+                invoice_data_entity_list = {
+                        'dict_all_cost_total': 'Total Cost for tenant based on all instances',
+                        'dict_total_all': 'Total Cost for Instance',
+                        'dict_inbound': 'Inbound charges for Instance',
+                        'dict_volume': 'Volume Charges',
+                        'dict_compute': 'Compute Charges for Instance',
+                        'dict_floating': 'Floating IP Charges',
+                        'dict_outbound': 'Outbound Charges for Instance',
+                        'dict_cloud_storage': 'cloud storage charges(Swift)',
+                }
+
+                # If value is Dict (Itemized invoice)
+                if type(value) is dict:
+
+                        # get the instance id and other instance and cost details
+                        for instance_id,details in value.iteritems():
+
+                                # variables for necessary items
+                                entity_name = invoice_data_entity_list[invoice_data_entity]
+                                instance_id = instance_id
+                                instance_name = details[0]
+                                instance_size = details[1]
+                                cost = details[2]
+
+                                # field names and add values to rows
+                                y.field_names = ["cost for entity","instance id","instance_name","instance_size","cost"]
+                                y.add_row([entity_name, instance_id, instance_name, instance_size, cost])
+
+                # if value not dict(simple datas only entity and cost)
+                else:
+
+                        # variables for necessary items
+                        entity_name = invoice_data_entity_list[invoice_data_entity]
+                        cost = value
+
+                        # field names and add values to rows
+                        y.field_names = ["cost for entity","instance id","instance_name","instance_size","cost"]
+                        y.add_row([entity_name,"-", "-", "-", cost])
+
+        print("Itemized invoice break up for invoice %s" % invoice_id)
+        print(y)
         print(color.END)
 
-        # Invoice details of the particular tenant
-        for tenant_data in invoice_details_full[tenant]:
 
-                # initialize table and table field names
-                x = PrettyTable()
-                x.field_names = ["id", "date", "from", "to", "total", "paid", "bal", "tenant(T)", "T ID","status" ]
-
-                # Necessary variables with necesary values
-                # Assigned necessary values for reusing the same
-                invoice_date = tenant_data['invoice_date']
-                invoice_date = datetime.datetime.fromtimestamp(float(invoice_date))
-                balance_cost = tenant_data['balance_cost']
-                tenant_name = tenant_data['tenant_name']
-                paid_cost = tenant_data['paid_cost']
-                total_cost = tenant_data['total_cost']
-                invoice_id = tenant_data['invoice_id']
-                tenant_id = tenant_data['tenant_id']
-                invoice_period_from = tenant_data['invoice_period_from']
-                invoice_period_from = datetime.datetime.fromtimestamp(float(invoice_period_from))
-                invoice_period_to = tenant_data['invoice_period_to']
-                invoice_period_to = datetime.datetime.fromtimestamp(float(invoice_period_to))
-                payment_status = tenant_data['payment_status']
-                id = tenant_data['id']
-                invoice_data = json.loads(tenant_data['invoice_data'])
-
-                print("Invoice details for invoice %s" % invoice_id)
-                # add row with necessary values
-                x.add_row([invoice_id, invoice_date, invoice_period_from, invoice_period_to, total_cost, paid_cost, balance_cost, tenant_name, tenant_id, payment_status])
-
-                # print table x which have invoice basic details
-                print(x)
-
-                # invoke next table y
-                y = PrettyTable()
-
-                # itemized Invoice details of the particular tenant
-                for invoice_data_entity,value in invoice_data.iteritems():
-
-                        # Invoice_data_entity details
-                        # For make user to understand the case well
-                        invoice_data_entity_list = {
-                                                    'dict_all_cost_total': 'Total Cost for tenant based on all instances',
-                                                    'dict_total_all': 'Total Cost for Instance',
-                                                    'dict_inbound': 'Inbound charges for Instance',
-                                                    'dict_volume': 'Volume Charges',
-                                                    'dict_compute': 'Compute Charges for Instance',
-                                                    'dict_floating': 'Floating IP Charges',
-                                                    'dict_outbound': 'Outbound Charges for Instance',
-                                                    'dict_cloud_storage': 'cloud storage charges(Swift)',
-                                                    }
-
-                        # If value is Dict (Itemized invoice)
-                        if type(value) is dict:
-
-                                # get the instance id and other instance and cost details
-                                for instance_id,details in value.iteritems():
-
-                                        # variables for necessary items
-                                        entity_name = invoice_data_entity_list[invoice_data_entity]
-                                        instance_id = instance_id
-                                        instance_name = details[0]  
-                                        instance_size = details[1]
-                                        cost = details[2]
-
-                                        # field names and add values to rows
-                                        y.field_names = ["cost for entity","instance id","instance_name","instance_size","cost"]
-                                        y.add_row([entity_name, instance_id, instance_name, instance_size, cost])
-
-                        # if value not dict(simple datas only entity and cost)
-                        else:
-
-                                        # variables for necessary items
-                                        entity_name = invoice_data_entity_list[invoice_data_entity]
-                                        cost = value
-
-                                        # field names and add values to rows
-                                        y.field_names = ["cost for entity","instance id","instance_name","instance_size","cost"]
-                                        y.add_row([entity_name,"-", "-", "-", cost])
-
-                print("Itemized invoice break up for invoice %s" % invoice_id)
-                print(y)
-                print(color.END)
-
-# Process invoice dict and display invoice list
-# Tabulated display using Pretty table
+# Process dict and display just invoice basic details
 def process_dict_and_display_invoice_list(invoice):
-
-    # Full invoice details
-    # Converting an Invoice Unicode to Dict
-    invoice_details_full = json.loads(invoice, use_decimal=True) # invoice full
-
     # class for formatting
     class color:
         BOLD = '\033[1m'
         END = '\033[0m'
 
-    # tenant based processing in invoicedata
-    for tenant in invoice_details_full:
+    for tenant_data in invoice:
 
-        print(color.BOLD)
-        # For printing details on tenant basis
-        print("Following were the invoice available for the tenant %s" % tenant)
-        print(color.END)
+        # initialize table and table field names
+        x = PrettyTable()
+        x.field_names = ["id", "date", "from", "to", "total", "paid", "bal", "tenant(T)", "T ID","status" ]
 
-        # Invoice details of the particular tenant
-        for tenant_data in invoice_details_full[tenant]:
+        invoice_date = tenant_data.invoice_date
+        balance_cost = tenant_data.balance_cost
+        tenant_name = tenant_data.tenant_name
+        paid_cost = tenant_data.paid_cost
+        total_cost = tenant_data.total_cost
+        invoice_id = tenant_data.invoice_id
+        tenant_id = tenant_data.tenant_id
+        invoice_period_from = tenant_data.invoice_period_from
+        invoice_period_to = tenant_data.invoice_period_to
+        payment_status = tenant_data.payment_status
+        id = tenant_data.id
+        invoice_data = tenant_data.invoice_data
 
-                # initialize table and table field names
-                x = PrettyTable()
-                x.field_names = ["id", "date", "from", "to", "total", "paid", "bal", "tenant(T)", "T ID","status" ]
-
-                # Necessary variables with necesary values
-                # Assigned necessary values for reusing the same
-                invoice_date = tenant_data['invoice_date']
-                invoice_date = datetime.datetime.fromtimestamp(float(invoice_date))
-                balance_cost = tenant_data['balance_cost']
-                tenant_name = tenant_data['tenant_name']
-                paid_cost = tenant_data['paid_cost']
-                total_cost = tenant_data['total_cost']
-                invoice_id = tenant_data['invoice_id']
-                tenant_id = tenant_data['tenant_id']
-                invoice_period_from = tenant_data['invoice_period_from']
-                invoice_period_from = datetime.datetime.fromtimestamp(float(invoice_period_from))
-                invoice_period_to = tenant_data['invoice_period_to']
-                invoice_period_to = datetime.datetime.fromtimestamp(float(invoice_period_to))
-                payment_status = tenant_data['payment_status']
-                id = tenant_data['id']
-                invoice_data = json.loads(tenant_data['invoice_data'])
-
-                print("Invoice details for invoice %s" % invoice_id)
-                # add row with necessary values
-                x.add_row([invoice_id, invoice_date, invoice_period_from, invoice_period_to, total_cost, paid_cost, balance_cost, tenant_name, tenant_id, payment_status])
-
-                # print table x which have invoice basic details
-                print(x)
+        x.add_row([invoice_id, invoice_date, invoice_period_from, invoice_period_to, total_cost, paid_cost, balance_cost, tenant_name, tenant_id, payment_status])
+        print(x)

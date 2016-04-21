@@ -22,10 +22,12 @@ class ReportResult(base.Resource):
     def __repr__(self):
         return "<Report %s>" % self._info
 
-
 class ReportManager(base.Manager):
 
-    base_url = "/v1/report"
+    base_url = '/v1/report'
+    resource_class = ReportResult
+    key = "report"
+    collection_key = "reports"
 
     def list_tenants(self):
         return self.client.get(self.base_url + "/tenants").json()
@@ -61,7 +63,9 @@ class ReportManager(base.Manager):
             filters.append("payment_status=%s" % payment_status)
         if filters:
             url += "?%s" % ('&'.join(filters))
-        return self.client.get(url).json()
+        return [self.resource_class(self, j, loaded=True)
+                for j in self.client.get(url).json()]
+
 
     # List the invoices, can accept all-tenants arg
     def list_invoice(self, all_tenants=None):
@@ -71,7 +75,9 @@ class ReportManager(base.Manager):
             filters.append("all_tenants=%s" % all_tenants)
         if filters:
             url += "?%s" % ('&'.join(filters))
-        return self.client.get(url).json()
+        return [self.resource_class(self, j, loaded=True)
+                for j in self.client.get(url).json()]
+
 
     # Show the invoice details
     def show_invoice(self, invoice_id):
@@ -81,7 +87,9 @@ class ReportManager(base.Manager):
             filters.append("invoice_id=%s" % invoice_id)
         if filters:
             url += "?%s" % ('&'.join(filters))
-        return self.client.get(url).json()
+        return [self.resource_class(self, j, loaded=True)
+                for j in self.client.get(url).json()]
+
 
     # Adding the invoice details, Arguments specified in kwargs 
     def add_invoice(self, **kwargs):
@@ -142,4 +150,3 @@ class ReportManager(base.Manager):
         if filters:
             url += "?%s" % ('&'.join(filters))
         return self.client.delete(url).json()
-
