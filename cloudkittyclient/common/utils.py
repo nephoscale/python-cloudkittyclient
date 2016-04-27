@@ -281,6 +281,7 @@ def process_dict_and_display(invoice):
                         'dict_floating': 'Floating IP Charges',
                         'dict_outbound': 'Outbound Charges for Instance',
                         'dict_cloud_storage': 'cloud storage charges(Swift)',
+                        'dict_instance_addon': 'instance addon charges',
                 }
 
                 # If value is Dict (Itemized invoice)
