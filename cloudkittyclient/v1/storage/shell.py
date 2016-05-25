@@ -39,3 +39,36 @@ def do_storage_dataframe_list(cc, args):
     fields = ['begin', 'end', 'tenant_id', 'resources']
     fields_labels = ['Begin', 'End', 'Tenant ID', 'Resources']
     utils.print_list(data, fields, fields_labels, sortby=0)
+
+@utils.arg('--begin', 
+           help='Starting date/time (YYYY-MM-ddThh:mm:ss)',
+           required=True)
+@utils.arg('--end',
+           help='Ending date/time (YYYY-MM-ddThh:mm:ss)',
+           required=True)
+@utils.arg('--unit',
+           help='unit details', 
+           required=True)
+@utils.arg('--qty',
+           help='quantity details',
+           required=True) 
+@utils.arg('--res-type',
+           help='resource type',
+           required=True)
+@utils.arg('--rate',
+           help='rate for usage',
+           required=True)
+@utils.arg('--desc',
+           help='desc for usage',
+           required=True)
+@utils.arg('--tenant',
+           help='Tenant ID',
+           required=False,
+           default=None)
+def do_storage_dataframe_add(cc, args):
+    """add dataframes."""
+    data = cc.storage.dataframes.create(begin=args.begin, end=args.end,
+                                     unit=args.unit, qty=args.qty,
+                                     rate=args.rate, desc=args.desc,
+                                     res_type=args.res_type,
+                                     tenant_id=args.tenant,)
