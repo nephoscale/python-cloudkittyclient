@@ -273,15 +273,16 @@ def process_dict_and_display(invoice):
                 # Invoice_data_entity details
                 # For make user to understand the case well
                 invoice_data_entity_list = {
-                        'dict_all_cost_total': 'Total Cost for tenant based on all instances',
+                        'dict_all_cost_total': 'Total Cost for Tenant based on all instances',
                         'dict_total_all': 'Total Cost for Instance',
-                        'dict_inbound': 'Inbound charges for Instance',
+                        'dict_inbound': 'Inbound Charges for Instance',
                         'dict_volume': 'Volume Charges',
                         'dict_compute': 'Compute Charges for Instance',
                         'dict_floating': 'Floating IP Charges',
                         'dict_outbound': 'Outbound Charges for Instance',
-                        'dict_cloud_storage': 'cloud storage charges(Swift)',
-                        'dict_instance_addon': 'instance addon charges',
+                        'dict_cloud_storage': 'Cloud Storage Charges(Swift)',
+                        'dict_instance_addon': 'Instance Addon Charges',
+                        'dict_tenant_addon': 'Tenant Addon Charges',
                 }
 
                 # If value is Dict (Itemized invoice)
