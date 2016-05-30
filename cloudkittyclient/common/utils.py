@@ -283,7 +283,9 @@ def process_dict_and_display(invoice):
                         'dict_cloud_storage': 'Cloud Storage Charges(Swift)',
                         'dict_instance_addon': 'Instance Addon Charges',
                         'dict_tenant_addon': 'Tenant Addon Charges',
+                        'dict_image_snapshot': 'Image/Snapshot Charges',
                 }
+
 
                 # If value is Dict (Itemized invoice)
                 if type(value) is dict:
