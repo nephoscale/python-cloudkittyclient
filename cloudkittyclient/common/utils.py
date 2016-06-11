@@ -241,7 +241,6 @@ def process_dict_and_display(invoice):
         BOLD = '\033[1m'
         END = '\033[0m'
 
-    print(invoice)
     for tenant_data in invoice:
 
         # initialize table and table field names
