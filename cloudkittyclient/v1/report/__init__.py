@@ -52,11 +52,14 @@ class ReportManager(base.Manager):
         return self.client.get(url).json()
 
     # Get invoice based on tenant-id, payment_status and invoice-id args
-    def get_invoice(self, tenant_id=None, invoice_id=None, payment_status=None):
+    # added option for getting invoice based on tenant_name
+    def get_invoice(self, tenant_id=None, invoice_id=None, payment_status=None, tenant_name1=None):
         url = self.base_url + "/invoice"
         filters = list()
         if tenant_id:
             filters.append("tenant_id=%s" % tenant_id)
+        if tenant_name1:
+            filters.append("tenant_name1=%s" % tenant_name1)
         if invoice_id:
             filters.append("invoice_id=%s" % invoice_id)
         if payment_status:

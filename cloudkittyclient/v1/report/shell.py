@@ -44,6 +44,7 @@ def do_report_tenant_list(cc, args):
            required=True)
 @utils.arg('-tn','--tenant-name',
            help='tenant-name',
+	   dest='total_tenant_name',
            required=True)
 @utils.arg('-tc','--total-cost',
            help='total-cost',
@@ -74,13 +75,13 @@ def do_invoice_add(cc, args):
                 "invoice_period_to":invoice_period_to,
                 "tenant_id":args.tenant,
                 "invoice_data":args.invoice_data,
-                "tenant_name":args.tenant_name,
+                "tenant_name":args.total_tenant_name,
                 "total_cost":args.total_cost,
                 "paid_cost":args.paid_cost,
                 "balance_cost":args.balance_cost,
                 "payment_status":args.payment_status
              }
-
+    
     out = cc.reports.add_invoice(**kwargs)
 
 
@@ -115,6 +116,10 @@ def do_invoice_show(cc, args):
            help='Tenant id',
            required=False,
            dest='total_tenant_id')
+@utils.arg('-un', '--tenant-name',
+           help='Tenant id',
+           required=False,
+           dest='total_tenant_name')
 @utils.arg('-v', '--invoice-id',
            help='invoice_id',
            required=False)
@@ -123,10 +128,11 @@ def do_invoice_show(cc, args):
            required=False)
 
 def do_invoice_get(cc, args):
-    """Get invoice based on tenant-id, invoice-id and payment_status args."""
+    """Get invoice based on tenant-id, invoice-id, tenant-name and payment_status args."""
 
     # Invoice details as Unicode response
     invoice = cc.reports.get_invoice(tenant_id=args.total_tenant_id,
+				   tenant_name1=args.total_tenant_name,
                                    invoice_id=args.invoice_id,
                                    payment_status = args.payment_status)
     utils.process_dict_and_display(invoice)
