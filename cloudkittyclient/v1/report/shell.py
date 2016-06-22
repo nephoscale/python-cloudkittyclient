@@ -132,7 +132,7 @@ def do_invoice_get(cc, args):
 
     # Invoice details as Unicode response
     invoice = cc.reports.get_invoice(tenant_id=args.total_tenant_id,
-				   tenant_name1=args.total_tenant_name,
+				   tenant_name=args.total_tenant_name,
                                    invoice_id=args.invoice_id,
                                    payment_status = args.payment_status)
     utils.process_dict_and_display(invoice)
