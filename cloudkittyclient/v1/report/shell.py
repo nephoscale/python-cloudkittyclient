@@ -209,4 +209,4 @@ def do_invoice_delete(cc, args):
                 "invoice_id":args.invoice_id if args.invoice_id else None,
              }
 
-    data = cc.reports.delete_invoice(**kwargs)
+data = cc.reports.delete_invoice(**kwargs)

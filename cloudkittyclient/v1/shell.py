@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from cloudkittyclient.apiclient import exceptions
 from cloudkittyclient.common import utils
 from cloudkittyclient import exc
 
@@ -21,11 +22,11 @@ def do_module_list(cc, args):
     '''List the samples for this meters.'''
     try:
         modules = cc.modules.list()
-    except exc.HTTPNotFound:
-        raise exc.CommandError('Modules not found: %s' % args.counter_name)
+    except exceptions.NotFound:
+        raise exc.CommandError('Modules not found')
     else:
-        field_labels = ['Module', 'Enabled']
-        fields = ['module_id', 'enabled']
+        field_labels = ['Module', 'Enabled', 'Priority']
+        fields = ['module_id', 'enabled', 'priority']
         utils.print_list(modules, fields, field_labels,
                          sortby=0)
 
@@ -38,11 +39,11 @@ def do_module_enable(cc, args):
     try:
         module = cc.modules.get(module_id=args.name)
         module.enable()
-    except exc.HTTPNotFound:
-        raise exc.CommandError('Modules not found: %s' % args.counter_name)
+    except exceptions.NotFound:
+        raise exc.CommandError('Module not found: %s' % args.name)
     else:
-        field_labels = ['Module', 'Enabled']
-        fields = ['module_id', 'enabled']
+        field_labels = ['Module', 'Enabled', 'Priority']
+        fields = ['module_id', 'enabled', 'priority']
         modules = [cc.modules.get(module_id=args.name)]
         utils.print_list(modules, fields, field_labels,
                          sortby=0)
@@ -56,11 +57,58 @@ def do_module_disable(cc, args):
     try:
         module = cc.modules.get(module_id=args.name)
         module.disable()
-    except exc.HTTPNotFound:
-        raise exc.CommandError('Modules not found: %s' % args.counter_name)
+    except exceptions.NotFound:
+        raise exc.CommandError('Module not found: %s' % args.name)
     else:
-        field_labels = ['Module', 'Enabled']
-        fields = ['module_id', 'enabled']
+        field_labels = ['Module', 'Enabled', 'Priority']
+        fields = ['module_id', 'enabled', 'priority']
         modules = [cc.modules.get(module_id=args.name)]
         utils.print_list(modules, fields, field_labels,
                          sortby=0)
+
+
+@utils.arg('-n', '--name',
+           help='Module name',
+           required=True)
+@utils.arg('-p', '--priority',
+           help='Module priority',
+           required=True)
+def do_module_set_priority(cc, args):
+    '''Set module priority.'''
+    try:
+        module = cc.modules.get(module_id=args.name)
+        module.set_priority(args.priority)
+    except exceptions.NotFound:
+        raise exc.CommandError('Module not found: %s' % args.name)
+    else:
+        field_labels = ['Module', 'Enabled', 'Priority']
+        fields = ['module_id', 'enabled', 'priority']
+        modules = [cc.modules.get(module_id=args.name)]
+        utils.print_list(modules, fields, field_labels,
+                         sortby=0)
+
+
+def do_info_config_get(cc, args):
+    '''Get cloudkitty configuration.'''
+    utils.print_dict(cc.config.get_config(), dict_property="Section")
+
+
+@utils.arg('-n', '--name',
+           help='Service name',
+           required=False)
+def do_info_service_get(cc, args):
+    '''Get service info.'''
+    if args.name:
+        try:
+            services_info = [cc.service_info.get(service_id=args.name)]
+        except exceptions.NotFound:
+            raise exc.CommandError('Service not found: %s' % args.name)
+    else:
+        try:
+            services_info = cc.service_info.list()
+        except exceptions.NotFound:
+            raise exc.CommandError('ServiceInfo not found')
+
+    field_labels = ['Service', 'Metadata', 'Unit']
+    fields = ['service_id', 'metadata', 'unit']
+    utils.print_list(services_info, fields, field_labels, sortby=0)

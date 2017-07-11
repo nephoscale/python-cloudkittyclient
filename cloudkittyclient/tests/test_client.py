@@ -45,6 +45,16 @@ class ClientTest(utils.BaseTestCase):
     def setUp(self):
         super(ClientTest, self).setUp()
 
+    def test_client_v1_with_session(self):
+        resp = mock.Mock(status_code=200, text=b'')
+        resp.json.return_value = {"modules": []}
+        session = mock.Mock()
+        session.request.return_value = resp
+        c = client.get_client(1, session=session)
+        c.modules.list()
+        self.assertTrue(session.request.called)
+        self.assertTrue(resp.json.called)
+
     def test_client_version(self):
         c1 = self.create_client(env=FAKE_ENV, api_version=1)
         self.assertIsInstance(c1, v1client.Client)
@@ -122,7 +132,7 @@ class ClientTest(utils.BaseTestCase):
             'user_agent': None,
             'debug': None,
         }
-        cls = 'cloudkittyclient.openstack.common.apiclient.client.HTTPClient'
+        cls = 'cloudkittyclient.apiclient.client.HTTPClient'
         with mock.patch(cls) as mocked:
             self.create_client(env)
             mocked.assert_called_with(**expected)
@@ -137,7 +147,8 @@ class ClientTest(utils.BaseTestCase):
         env = FAKE_ENV.copy()
         env['cacert'] = '/path/to/cacert'
         client = self.create_client(env)
-        self.assertEqual('/path/to/cacert', client.client.verify)
+        self.assertEqual('/path/to/cacert',
+                         client.http_client.http_client.verify)
 
     def test_v1_client_certfile_and_keyfile(self):
         env = FAKE_ENV.copy()
@@ -145,4 +156,4 @@ class ClientTest(utils.BaseTestCase):
         env['key_file'] = '/path/to/keycert'
         client = self.create_client(env)
         self.assertEqual(('/path/to/cert', '/path/to/keycert'),
-                         client.client.cert)
+                         client.http_client.http_client.cert)
