@@ -118,6 +118,10 @@ class ReportManager(base.Manager):
             filters.append("balance_cost=%s" % kwargs.get('balance_cost'))
         if kwargs.get('payment_status'):
             filters.append("payment_status=%s" % kwargs.get('payment_status'))
+        if kwargs.get('vat_rate'):
+            filters.append("vat_rate=%s" % kwargs.get('vat_rate'))
+        if kwargs.get('total_cost_after_vat'):
+            filters.append("total_cost_after_vat=%s" % kwargs.get('total_cost_after_vat'))
             print(filters)
         if filters:
             url += "?%s" % ('&'.join(filters))
