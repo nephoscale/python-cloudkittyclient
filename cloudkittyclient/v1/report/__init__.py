@@ -34,7 +34,7 @@ class ReportManager(base.Manager):
 
     # Modified by Muralidharan.s for applying a logic for getting 
     # Total value based on Instance
-    def get_total(self, tenant_id=None, begin=None, end=None, service=None,instance_id=None):
+    def get_total(self, tenant_id=None, begin=None, end=None, service=None,instance_id=None, volume_type_id=None):
         url = self.base_url + "/total"
         filters = list()
         if tenant_id:
@@ -47,6 +47,11 @@ class ReportManager(base.Manager):
             filters.append("service=%s" % service)
         if instance_id:
             filters.append("instance_id=%s" % instance_id)
+
+	# check for volume type id
+	if volume_type_id:
+	   filters.append("volume_type_id=%s" % volume_type_id)
+
         if filters:
             url += "?%s" % ('&'.join(filters))
         return self.client.get(url).json()
