@@ -99,38 +99,7 @@ class ReportManager(base.Manager):
     # Adding the invoice details, Arguments specified in kwargs 
     def add_invoice(self, **kwargs):
         url = self.base_url + "/add_invoice"
-        filters = list()
-
-        if kwargs.get('invoice_id'):
-            filters.append("invoice_id=%s" % kwargs.get('invoice_id'))
-        if kwargs.get('invoice_date'):
-            filters.append("invoice_date=%s" % kwargs.get('invoice_date'))
-        if kwargs.get('invoice_period_from'):
-            filters.append("invoice_period_from=%s" % kwargs.get('invoice_period_from'))
-        if kwargs.get('invoice_period_to'):
-            filters.append("invoice_period_to=%s" % kwargs.get('invoice_period_to'))
-        if kwargs.get('tenant_id'):
-            filters.append("tenant_id=%s" % kwargs.get('tenant_id'))
-        if kwargs.get('invoice_data'):
-            filters.append("invoice_data=%s" % kwargs.get('invoice_data'))
-        if kwargs.get('tenant_name'):
-            filters.append("tenant_name=%s" % kwargs.get('tenant_name'))
-        if kwargs.get('total_cost'):
-            filters.append("total_cost=%s" % kwargs.get('total_cost'))
-        if kwargs.get('paid_cost'):
-            filters.append("paid_cost=%s" % kwargs.get('paid_cost'))
-        if kwargs.get('balance_cost'):
-            filters.append("balance_cost=%s" % kwargs.get('balance_cost'))
-        if kwargs.get('payment_status'):
-            filters.append("payment_status=%s" % kwargs.get('payment_status'))
-        if kwargs.get('vat_rate'):
-            filters.append("vat_rate=%s" % kwargs.get('vat_rate'))
-        if kwargs.get('total_cost_after_vat'):
-            filters.append("total_cost_after_vat=%s" % kwargs.get('total_cost_after_vat'))
-            print(filters)
-        if filters:
-            url += "?%s" % ('&'.join(filters))
-        return self.client.post(url).json()
+        return self.client.post(url, data = kwargs).json()
 
     # Updating a invoice
     def update_invoice(self, **kwargs):
