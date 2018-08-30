@@ -13,12 +13,18 @@
 import contextlib
 import time
 
+from keystoneauth1 import discover
+from keystoneauth1 import exceptions as ks_exc
+from keystoneauth1.identity import v2 as v2_auth
+from keystoneauth1.identity import v3 as v3_auth
+from keystoneauth1 import session
+
 from keystoneclient import adapter
-from keystoneclient.auth.identity import v2 as v2_auth
-from keystoneclient.auth.identity import v3 as v3_auth
-from keystoneclient import discover
-from keystoneclient import exceptions as ks_exc
-from keystoneclient import session
+#from keystoneclient.auth.identity import v2 as v2_auth
+#from keystoneclient.auth.identity import v3 as v3_auth
+#from keystoneclient import discover
+#from keystoneclient import exceptions as ks_exc
+#from keystoneclient import session
 from oslo_utils import strutils
 import six.moves.urllib.parse as urlparse
 
@@ -35,7 +41,9 @@ def _discover_auth_versions(session, auth_url):
     v2_auth_url = None
     v3_auth_url = None
     try:
-        ks_discover = discover.Discover(session=session, auth_url=auth_url)
+
+        #ks_discover = discover.Discover(session=session, auth_url=auth_url)
+        ks_discover = discover.Discover(session=session, url=auth_url)
         v2_auth_url = ks_discover.url_for('2.0')
         v3_auth_url = ks_discover.url_for('3.0')
     except ks_exc.DiscoveryFailure:
@@ -64,6 +72,7 @@ def _get_keystone_session(**kwargs):
     # been filed: https://bugs.launchpad.net/python-keystoneclient/+bug/1330677
 
     # first create a Keystone session
+
     cacert = kwargs.pop('cacert', None)
     cert = kwargs.pop('cert', None)
     key = kwargs.pop('key', None)
@@ -81,9 +90,10 @@ def _get_keystone_session(**kwargs):
         # passing cert and key together is deprecated in favour of the
         # requests lib form of having the cert and key as a tuple
         cert = (cert, key)
-
+    
     # create the keystone client session
     ks_session = session.Session(verify=verify, cert=cert)
+
     v2_auth_url, v3_auth_url = _discover_auth_versions(ks_session, auth_url)
 
     username = kwargs.pop('username', None)
@@ -161,6 +171,7 @@ class AuthPlugin(auth.BaseAuthPlugin):
         super(AuthPlugin, self).__init__(auth_system, **kwargs)
 
     def _do_authenticate(self, http_client):
+
         token = self.opts.get('token') or self.opts.get('auth_token')
         endpoint = self.opts.get('endpoint')
         if not (token and endpoint):
@@ -187,7 +198,6 @@ class AuthPlugin(auth.BaseAuthPlugin):
                 'endpoint_type': self.opts.get('endpoint_type'),
             }
 
-            # retrieve session
             ks_session = _get_keystone_session(**ks_kwargs)
             token = lambda: ks_session.get_token()
             endpoint = (self.opts.get('endpoint') or
